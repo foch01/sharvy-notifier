@@ -6,7 +6,7 @@ Récupère automatiquement ta place de parking attribuée sur **Sharvy** et t'en
 
 - Python 3.8+
 - Un compte [Sharvy](https://app.sharvy.com/)
-- [OpenClaw](https://openclaw.ai) configuré avec Telegram
+- Un bot Telegram (crée-le avec [@BotFather](https://t.me/BotFather) sur Telegram)
 
 ## Installation
 
@@ -24,6 +24,7 @@ Crée un fichier `.env` ou exporte ces variables d'environnement :
 export SHARVY_EMAIL="ton@email.com"
 export SHARVY_PASSWORD="ton_mot_de_passe"
 export SHARVY_BASE_URL="https://app.sharvy.com/ton-espace"
+export TELEGRAM_BOT_TOKEN="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
 export TELEGRAM_TARGET="123456789"
 ```
 
@@ -42,13 +43,9 @@ Le script :
 
 ## Notifications Telegram
 
-Le script utilise **OpenClaw** pour envoyer les notifications. Assure-toi qu'OpenClaw est installé et configuré avec un canal Telegram :
+Le script utilise l'API Telegram directement. Crée un bot via [@BotFather](https://t.me/BotFather) pour obtenir un token, puis définis-le dans `TELEGRAM_BOT_TOKEN`.
 
-```bash
-openclaw config set channels.telegram.enabled true
-```
-
-Le message est envoyé au destinataire configuré via la variable `TELEGRAM_TARGET`.
+Le message est envoyé au destinataire configuré via la variable `TELEGRAM_TARGET` (ton ID Telegram).
 
 ## Statuts des places
 

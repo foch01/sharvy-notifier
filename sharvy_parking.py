@@ -3,7 +3,6 @@
 
 import json
 import os
-import subprocess
 import sys
 from datetime import datetime, timezone
 
@@ -13,6 +12,7 @@ from bs4 import BeautifulSoup
 EMAIL = os.environ.get("SHARVY_EMAIL")
 PASSWORD = os.environ.get("SHARVY_PASSWORD")
 BASE = os.environ.get("SHARVY_BASE_URL")
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_TARGET = os.environ.get("TELEGRAM_TARGET")
 
 STATUS_LABELS = {
@@ -25,15 +25,19 @@ STATUS_LABELS = {
 }
 
 
+TELEGRAM_API = "https://api.telegram.org/bot"
+
+
 def send_telegram(message):
     try:
-        subprocess.run(
-            ["openclaw", "message", "send",
-             "--channel", "telegram",
-             "--target", TELEGRAM_TARGET,
-             "--message", message],
-            capture_output=True, text=True, timeout=30
-        )
+        url = f"{TELEGRAM_API}{TELEGRAM_BOT_TOKEN}/sendMessage"
+        payload = {
+            "chat_id": TELEGRAM_TARGET,
+            "text": message,
+            "parse_mode": "Markdown",
+        }
+        resp = requests.post(url, json=payload, timeout=15)
+        resp.raise_for_status()
     except Exception as e:
         print(f"⚠️  Erreur envoi Telegram : {e}")
 
@@ -104,12 +108,21 @@ def get_parking_data(session):
 
 
 def main():
-    if not EMAIL or not PASSWORD or not BASE or not TELEGRAM_TARGET:
-        print("❌ Variables d'environnement requises :")
-        print("   export SHARVY_EMAIL=ton@email.com")
-        print("   export SHARVY_PASSWORD=ton_mot_de_passe")
-        print("   export SHARVY_BASE_URL=https://app.sharvy.com/ton-espace")
-        print("   export TELEGRAM_TARGET=123456789")
+    missing = []
+    if not EMAIL:
+        missing.append("SHARVY_EMAIL")
+    if not PASSWORD:
+        missing.append("SHARVY_PASSWORD")
+    if not BASE:
+        missing.append("SHARVY_BASE_URL")
+    if not TELEGRAM_BOT_TOKEN:
+        missing.append("TELEGRAM_BOT_TOKEN")
+    if not TELEGRAM_TARGET:
+        missing.append("TELEGRAM_TARGET")
+    if missing:
+        print("❌ Variables d'environnement manquantes :")
+        for v in missing:
+            print(f"   export {v}=...")
         sys.exit(1)
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
