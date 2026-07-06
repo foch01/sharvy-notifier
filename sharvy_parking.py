@@ -161,7 +161,7 @@ def main():
 
             if has_spot and has_confirmed:
                 spot = am_spot or pm_spot
-                msg = f"🅿️ Aujourd'hui → *{spot}*"
+                msg = f"🅿️ Ta place de parking aujourd'hui : *{spot}*"
                 send_telegram(msg)
                 print("📤 Résultat envoyé sur Telegram.")
             else:
